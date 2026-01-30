@@ -50,14 +50,15 @@ function buildTweet({ turnoverTop10, sectorTop10 }) {
   const lines = [];
   lines.push(`A股 盘中速览 (${ts})`);
   lines.push('');
-  lines.push('成交额Top10:');
-  turnoverTop10.slice(0, 10).forEach((s, idx) => {
-    lines.push(`${idx + 1}. ${s.name}(${s.symbol}) ${s.turnover}`);
+  // X 对中文等字符有“加权长度”限制；为避免超长，这里只发 Top5。
+  lines.push('成交额Top5:');
+  turnoverTop10.slice(0, 5).forEach((s, idx) => {
+    lines.push(`${idx + 1}. ${s.name}${s.symbol ? `(${s.symbol})` : ''} ${s.turnover}`.trim());
   });
   lines.push('');
-  lines.push('涨幅Top10板块:');
-  sectorTop10.slice(0, 10).forEach((b, idx) => {
-    lines.push(`${idx + 1}. ${b.name} ${b.pct}`);
+  lines.push('涨幅Top5板块:');
+  sectorTop10.slice(0, 5).forEach((b, idx) => {
+    lines.push(`${idx + 1}. ${b.name} ${b.pct}`.trim());
   });
   return lines.join('\n');
 }
