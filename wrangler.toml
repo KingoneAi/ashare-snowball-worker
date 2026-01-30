@@ -1,0 +1,5 @@
+name = "ashare-snowball-worker"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Put local secrets in .dev.vars (not committed)
