@@ -71,7 +71,31 @@ function appendLocalLog(text) {
   return file;
 }
 
+function shouldRunNowAsiaShanghai(d = new Date()) {
+  // Cron runs every 5 minutes from 09:00-15:55 (workdays). We must skip:
+  // - before 09:15
+  // - lunch break 11:30-13:00
+  // - after 15:00
+  // Assumption: host timezone is Asia/Shanghai.
+  const h = d.getHours();
+  const m = d.getMinutes();
+  const mins = h * 60 + m;
+  const openStart = 9 * 60 + 15;
+  const lunchStart = 11 * 60 + 30;
+  const lunchEnd = 13 * 60 + 0;
+  const closeEnd = 15 * 60 + 0;
+
+  const inMorning = mins >= openStart && mins <= lunchStart;
+  const inAfternoon = mins >= lunchEnd && mins <= closeEnd;
+  return inMorning || inAfternoon;
+}
+
 async function main() {
+  if (!shouldRunNowAsiaShanghai(now)) {
+    // Quiet exit; cron will call again later.
+    return;
+  }
+
   const data = await fetchFromXueqiuMcp();
   const tweet = buildTweet(data);
 
